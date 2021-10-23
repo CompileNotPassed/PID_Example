@@ -1,16 +1,16 @@
 /*********************************************************************************************************************
  * COPYRIGHT NOTICE
- * Copyright (c) 2020,Öğ·É¿Æ¼¼
+ * Copyright (c) 2020,é€é£ç§‘æŠ€
  * All rights reserved.
- * ¼¼ÊõÌÖÂÛQQÈº£ºÒ»Èº£º179029047(ÒÑÂú)  ¶şÈº£º244861897(ÒÑÂú)  ÈıÈº£º824575535
+ * æŠ€æœ¯è®¨è®ºQQç¾¤ï¼šä¸€ç¾¤ï¼š179029047(å·²æ»¡)  äºŒç¾¤ï¼š244861897(å·²æ»¡)  ä¸‰ç¾¤ï¼š824575535
  *
- * ÒÔÏÂËùÓĞÄÚÈİ°æÈ¨¾ùÊôÖğ·É¿Æ¼¼ËùÓĞ£¬Î´¾­ÔÊĞí²»µÃÓÃÓÚÉÌÒµÓÃÍ¾£¬
- * »¶Ó­¸÷Î»Ê¹ÓÃ²¢´«²¥±¾³ÌĞò£¬ĞŞ¸ÄÄÚÈİÊ±±ØĞë±£ÁôÖğ·É¿Æ¼¼µÄ°æÈ¨ÉùÃ÷¡£
+ * ä»¥ä¸‹æ‰€æœ‰å†…å®¹ç‰ˆæƒå‡å±é€é£ç§‘æŠ€æ‰€æœ‰ï¼Œæœªç»å…è®¸ä¸å¾—ç”¨äºå•†ä¸šç”¨é€”ï¼Œ
+ * æ¬¢è¿å„ä½ä½¿ç”¨å¹¶ä¼ æ’­æœ¬ç¨‹åºï¼Œä¿®æ”¹å†…å®¹æ—¶å¿…é¡»ä¿ç•™é€é£ç§‘æŠ€çš„ç‰ˆæƒå£°æ˜ã€‚
  *
  * @file       		main
- * @company	   		³É¶¼Öğ·É¿Æ¼¼ÓĞÏŞ¹«Ë¾
- * @author     		Öğ·É¿Æ¼¼(QQ790875685)
- * @version    		²é¿´docÄÚversionÎÄ¼ş °æ±¾ËµÃ÷
+ * @company	   		æˆéƒ½é€é£ç§‘æŠ€æœ‰é™å…¬å¸
+ * @author     		é€é£ç§‘æŠ€(QQ790875685)
+ * @version    		æŸ¥çœ‹docå†…versionæ–‡ä»¶ ç‰ˆæœ¬è¯´æ˜
  * @Software 		MDK FOR C51 V9.60
  * @Target core		STC8H8K64S4
  * @Taobao   		https://seekfree.taobao.com/
@@ -18,24 +18,46 @@
  ********************************************************************************************************************/
 
 #include "headfile.h"
+#define DIR P35
+#define PWM_FREQ_MAX 2500
+//board.hæ–‡ä»¶ä¸­FOSCçš„å€¼è®¾ç½®ä¸º0,åˆ™ç¨‹åºè‡ªåŠ¨è¯†åˆ«ç³»ç»Ÿé¢‘ç‡
 
-//board.hÎÄ¼şÖĞFOSCµÄÖµÉèÖÃÎª0,Ôò³ÌĞò×Ô¶¯Ê¶±ğÏµÍ³ÆµÂÊ
+/*board.hæ–‡ä»¶ä¸­FOSCçš„å€¼è®¾ç½®ä¸ä¸º0ï¼Œåˆ™ç³»ç»Ÿé¢‘ç‡ä¸ºFOSCçš„å€¼ï¼Œ
+åœ¨ä½¿ç”¨stc-ispå·¥å…·ä¸‹è½½ç¨‹åºçš„æ—¶å€™éœ€è¦å°†IRCé¢‘ç‡è®¾ç½®ä¸ºFOSCçš„å€¼*/
 
-/*board.hÎÄ¼şÖĞFOSCµÄÖµÉèÖÃ²»Îª0£¬ÔòÏµÍ³ÆµÂÊÎªFOSCµÄÖµ£¬
-ÔÚÊ¹ÓÃstc-isp¹¤¾ßÏÂÔØ³ÌĞòµÄÊ±ºòĞèÒª½«IRCÆµÂÊÉèÖÃÎªFOSCµÄÖµ*/
+/*åœ¨board_initä¸­,å·²ç»å°†P54å¼•è„šè®¾ç½®ä¸ºå¤ä½ï¼Œ
+å¦‚æœéœ€è¦ä½¿ç”¨P54å¼•è„š,å¯ä»¥åœ¨board.cæ–‡ä»¶ä¸­çš„board_init()å‡½æ•°ä¸­åˆ é™¤SET_P54_RESRTå³å¯*/
 
-/*ÔÚboard_initÖĞ,ÒÑ¾­½«P54Òı½ÅÉèÖÃÎª¸´Î»£¬
-Èç¹ûĞèÒªÊ¹ÓÃP54Òı½Å,¿ÉÒÔÔÚboard.cÎÄ¼şÖĞµÄboard_init()º¯ÊıÖĞÉ¾³ıSET_P54_RESRT¼´¿É*/
+float kp, kd, ki;
+int16 duty,dataFrame[1], timeElapsed, previousError, integral, error, increment,target, measuredValue, output,thresholdValue;
 
-float kp, kd, ki, measuredValue, target, timeElapsed, previousError, integral, output, error, increment, thresholdValue;
+void vcan_sendware(void *wareaddr, uint32 waresize)
+{
+#define VCAN_PORT UART_1
+#define CMD_WARE     3
 
-double doubleAbs(double number){
+    int16 i, tem;
+    uint8 cmdf[2] = {CMD_WARE, ~CMD_WARE};
+    uint8 cmdr[2] = {~CMD_WARE, CMD_WARE};
+
+    for (i = 0; i < waresize; i += 2)
+    {
+        tem = ((uint8 *) wareaddr)[i];
+        ((uint8 *) wareaddr)[i] = ((uint8 *) wareaddr)[i + 1];
+        ((uint8 *) wareaddr)[i + 1] = tem;
+    }
+    uart_putbuff(VCAN_PORT, cmdf, sizeof(cmdf));
+    uart_putbuff(VCAN_PORT, (uint8 *) wareaddr, waresize);
+    uart_putbuff(VCAN_PORT, cmdr, sizeof(cmdr));
+}
+
+int abs(int number){
     return number>0?number:-number;
 }
 
 int beta(){
     double error = target - measuredValue;
-    return thresholdValue>doubleAbs(error)?0:1;
+    return thresholdValue>abs(error)?0:1;
 }
 
 
@@ -43,7 +65,7 @@ void PID_Controller()
 {
 	error = target - measuredValue;
 	integral += error;
-	increment = kp * error + beta() * ki * integral + kd * (error - previousError) / timeElapsed;
+	increment = kp * error +beta() * ki * integral + kd * (error - previousError) / timeElapsed;
 	output = measuredValue + increment;
 	previousError = error;
 }
@@ -51,34 +73,58 @@ void PID_Controller()
 void PID_Init()
 {
 	//Only for Test use
-	timeElapsed = 1.0;
-	measuredValue = 50.0;
-	target = 100.0;
-	kp=0.6;
-	ki=0.02;
-	kd=0.05;
-	thresholdValue=70.0;
+	timeElapsed = 1;
+	measuredValue = 0;
+	target = 875;
+	kp = 0.6;
+	ki = 0.1;
+	kd = 0.1;
+	thresholdValue = 200;
 	//Test End
 
-	previousError = 0.0;
-	integral = 0.0;
-	output = 0.0;
+	previousError = 0;
+	integral = 0;
+	output = 0;
+	error=0;
+	increment=0;
 }
 
 void main()
 {
-	DisableGlobalIRQ(); //¹Ø±Õ×ÜÖĞ¶Ï
-	board_init();		//³õÊ¼»¯ÄÚ²¿¼Ä´æÆ÷£¬ÎğÉ¾³ı´Ë¾ä´úÂë¡£
+	DisableGlobalIRQ(); //å…³é—­æ€»ä¸­æ–­
+	board_init();		//åˆå§‹åŒ–å†…éƒ¨å¯„å­˜å™¨ï¼Œå‹¿åˆ é™¤æ­¤å¥ä»£ç ã€‚
 
-	//´Ë´¦±àĞ´ÓÃ»§´úÂë(ÀıÈç£ºÍâÉè³õÊ¼»¯´úÂëµÈ)
+	//æ­¤å¤„ç¼–å†™ç”¨æˆ·ä»£ç (ä¾‹å¦‚ï¼šå¤–è®¾åˆå§‹åŒ–ä»£ç ç­‰)
+	pwm_init(PWM4P_P66, 10000, 0);
+	ctimer_count_init(CTIM0_P34);
 
-	EnableGlobalIRQ(); //¿ªÆô×ÜÖĞ¶Ï
-	PID_Init(); 
-	while(1){
-		P54=0;
-        measuredValue = output;
-       	PID_Controller();
-		delay_ms(timeElapsed*1000.0);
+	EnableGlobalIRQ(); //å¼€å¯æ€»ä¸­æ–­
+	PID_Init();
+	while (1)
+	{
+		P45 = 0;
+		if(DIR == 1)
+		{
+			measuredValue = -ctimer_count_read(CTIM0_P34);
+		}
+		else
+		{
+			measuredValue = ctimer_count_read(CTIM0_P34);
+		}
+		ctimer_count_clean(CTIM0_P34);
+		PID_Controller();
+
+		duty=(int)(2.291*output+369.54);
+		
+		if(duty>=PWM_FREQ_MAX){
+			duty=PWM_FREQ_MAX;
+		}
+		
+		pwm_duty(PWM4P_P66,duty);
+		dataFrame[0]=measuredValue;
+		//printf("%d,%d\n",output,measuredValue);
+		vcan_sendware(dataFrame,sizeof(dataFrame));
+		//measuredValue=output;
+		delay_ms(timeElapsed*1000);
 	}
-
 }
