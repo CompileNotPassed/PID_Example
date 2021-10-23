@@ -1,0 +1,43 @@
+{
+    "configurations": [
+        {
+            "name": "STC8H8K64U",
+            "includePath": [
+                "d:\\Code\\Libraries\\libraries",
+                "d:\\Code\\Libraries\\seekfree_libraries",
+                "d:\\Code\\Libraries\\seekfree_peripheral",
+                "d:\\Code\\PID\\USER\\inc",
+                "d:\\Code\\PID\\USER\\src",
+                "d:\\Code\\PID\\CODE",
+                "C:\\Keil_v5\\C51\\INC",
+                "d:\\Code\\Libraries"
+            ],
+            "defines": [
+                "__C51__",
+                "__VSCODE_C51__",
+                "reentrant=",
+                "compact=",
+                "small=",
+                "large=",
+                "data=",
+                "idata=",
+                "pdata=",
+                "bdata=",
+                "xdata=",
+                "code=",
+                "bit=char",
+                "sbit=char",
+                "sfr=char",
+                "sfr16=int",
+                "sfr32=int",
+                "interrupt=",
+                "using=",
+                "_at_=",
+                "_priority_=",
+                "_task_="
+            ],
+            "intelliSenseMode": "${default}"
+        }
+    ],
+    "version": 4
+}
