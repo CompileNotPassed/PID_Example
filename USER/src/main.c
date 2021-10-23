@@ -78,8 +78,7 @@ void main()
 		P54=0;
         measuredValue = output;
        	PID_Controller();
-		delay_ms(100);
-		printf("%lf\n",output/1000);
+		delay_ms(timeElapsed*1000.0);
 	}
 
 }

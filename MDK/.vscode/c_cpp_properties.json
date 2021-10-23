@@ -6,9 +6,9 @@
                 "d:\\Code\\Libraries\\libraries",
                 "d:\\Code\\Libraries\\seekfree_libraries",
                 "d:\\Code\\Libraries\\seekfree_peripheral",
-                "d:\\Code\\PID\\USER\\inc",
-                "d:\\Code\\PID\\USER\\src",
-                "d:\\Code\\PID\\CODE",
+                "d:\\Code\\PID_SEEKFREE\\USER\\inc",
+                "d:\\Code\\PID_SEEKFREE\\USER\\src",
+                "d:\\Code\\PID_SEEKFREE\\CODE",
                 "C:\\Keil_v5\\C51\\INC",
                 "d:\\Code\\Libraries"
             ],
