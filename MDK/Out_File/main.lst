@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.0.0   MAIN                                                              10/23/2021 17:03:05 PAGE 1   
+C51 COMPILER V9.60.0.0   MAIN                                                              10/24/2021 15:15:10 PAGE 1   
 
 
 C51 COMPILER V9.60.0.0, COMPILATION OF MODULE MAIN
@@ -31,124 +31,69 @@ line level    source
              -***********/
   19          
   20          #include "headfile.h"
-  21          #define DIR P35
-  22          #define PWM_FREQ_MAX 2500
-  23          //board.h文件中FOSC的值设置为0,则程序自动识别系统频率
-  24          
-  25          /*board.h文件中FOSC的值设置不为0，则系统频率为FOSC的值，
-  26          在使用stc-isp工具下载程序的时候需要将IRC频率设置为FOSC的值*/
-  27          
-  28          /*在board_init中,已经将P54引脚设置为复位，
-  29          如果需要使用P54引脚,可以在board.c文件中的board_init()函数中删除SET_P54_RESRT即可*/
-  30          
-  31          float kp, kd, ki;
-  32          int16 duty,dataFrame[1], timeElapsed, previousError, integral, error, increment,target, measuredValue, out
-             -put,thresholdValue;
-  33          
-  34          void vcan_sendware(void *wareaddr, uint32 waresize)
-  35          {
-  36   1      #define VCAN_PORT UART_1
-  37   1      #define CMD_WARE     3
-  38   1      
-  39   1          int16 i, tem;
-  40   1          uint8 cmdf[2] = {CMD_WARE, ~CMD_WARE};
-  41   1          uint8 cmdr[2] = {~CMD_WARE, CMD_WARE};
-  42   1      
-  43   1          for (i = 0; i < waresize; i += 2)
-  44   1          {
-  45   2              tem = ((uint8 *) wareaddr)[i];
-  46   2              ((uint8 *) wareaddr)[i] = ((uint8 *) wareaddr)[i + 1];
-  47   2              ((uint8 *) wareaddr)[i + 1] = tem;
-  48   2          }
-  49   1          uart_putbuff(VCAN_PORT, cmdf, sizeof(cmdf));
-  50   1          uart_putbuff(VCAN_PORT, (uint8 *) wareaddr, waresize);
-C51 COMPILER V9.60.0.0   MAIN                                                              10/23/2021 17:03:05 PAGE 2   
+  21          #include "pid.c"
+  22          #include "sendware.c"
+  23          #define DIR P35
+  24          #define PWM_FREQ_MAX 2500
+  25          //board.h文件中FOSC的值设置为0,则程序自动识别系统频率
+  26          
+  27          /*board.h文件中FOSC的值设置不为0，则系统频率为FOSC的值，
+  28          在使用stc-isp工具下载程序的时候需要将IRC频率设置为FOSC的值*/
+  29          
+  30          /*在board_init中,已经将P54引脚设置为复位，
+  31          如果需要使用P54引脚,可以在board.c文件中的board_init()函数中删除SET_P54_RESRT即可*/
+  32          
+  33          int16 duty,dataFrame[1];
+  34          
+  35          
+  36          void main()
+  37          {
+  38   1        DisableGlobalIRQ(); //关闭总中断
+  39   1        board_init();   //初始化内部寄存器，勿删除此句代码。
+  40   1      
+  41   1        //此处编写用户代码(例如：外设初始化代码等)
+  42   1        pwm_init(PWM4P_P66, 10000, 0);
+  43   1        ctimer_count_init(CTIM0_P34);
+  44   1      
+  45   1        EnableGlobalIRQ(); //开启总中断
+  46   1        PID_Init();
+  47   1        while (1)
+  48   1        {
+  49   2          P45 = 0;
+  50   2          if(DIR == 1)
+  51   2          {
+C51 COMPILER V9.60.0.0   MAIN                                                              10/24/2021 15:15:10 PAGE 2   
 
-  51   1          uart_putbuff(VCAN_PORT, cmdr, sizeof(cmdr));
-  52   1      }
-  53          
-  54          int abs(int number){
-  55   1          return number>0?number:-number;
-  56   1      }
-  57          
-  58          int beta(){
-  59   1          double error = target - measuredValue;
-  60   1          return thresholdValue>abs(error)?0:1;
-  61   1      }
-  62          
-  63          
-  64          void PID_Controller()
-  65          {
-  66   1        error = target - measuredValue;
-  67   1        integral += error;
-  68   1        increment = kp * error +beta() * ki * integral + kd * (error - previousError) / timeElapsed;
-  69   1        output = measuredValue + increment;
-  70   1        previousError = error;
-  71   1      }
-  72          
-  73          void PID_Init()
-  74          {
-  75   1        //Only for Test use
-  76   1        timeElapsed = 1;
-  77   1        measuredValue = 0;
-  78   1        target = 875;
-  79   1        kp = 0.6;
-  80   1        ki = 0.1;
-  81   1        kd = 0.1;
-  82   1        thresholdValue = 200;
-  83   1        //Test End
-  84   1      
-  85   1        previousError = 0;
-  86   1        integral = 0;
-  87   1        output = 0;
-  88   1        error=0;
-  89   1        increment=0;
-  90   1      }
-  91          
-  92          void main()
-  93          {
-  94   1        DisableGlobalIRQ(); //关闭总中断
-  95   1        board_init();   //初始化内部寄存器，勿删除此句代码。
-  96   1      
-  97   1        //此处编写用户代码(例如：外设初始化代码等)
-  98   1        pwm_init(PWM4P_P66, 10000, 0);
-  99   1        ctimer_count_init(CTIM0_P34);
- 100   1      
- 101   1        EnableGlobalIRQ(); //开启总中断
- 102   1        PID_Init();
- 103   1        while (1)
- 104   1        {
- 105   2          P45 = 0;
- 106   2          if(DIR == 1)
- 107   2          {
- 108   3            measuredValue = -ctimer_count_read(CTIM0_P34);
- 109   3          }
- 110   2          else
- 111   2          {
- 112   3            measuredValue = ctimer_count_read(CTIM0_P34);
-C51 COMPILER V9.60.0.0   MAIN                                                              10/23/2021 17:03:05 PAGE 3   
-
- 113   3          }
- 114   2          ctimer_count_clean(CTIM0_P34);
- 115   2          PID_Controller();
- 116   2          duty=(int)(2.291*output+369.54);
- 117   2          if(duty>=PWM_FREQ_MAX){
- 118   3            duty=PWM_FREQ_MAX;
- 119   3          }
- 120   2          
- 121   2          pwm_duty(PWM4P_P66,duty);
- 122   2          dataFrame[0]=measuredValue;
- 123   2          //printf("%d,%d\n",output,measuredValue);
- 124   2          vcan_sendware(dataFrame,sizeof(dataFrame));
- 125   2          //measuredValue=output;
- 126   2          delay_ms(timeElapsed*100);
- 127   2        }
- 128   1      }
+  52   3            measuredValue = -ctimer_count_read(CTIM0_P34);
+  53   3          }
+  54   2          else
+  55   2          {
+  56   3            measuredValue = ctimer_count_read(CTIM0_P34);
+  57   3          }
+  58   2      
+  59   2          ctimer_count_clean(CTIM0_P34);
+  60   2          PID_Controller();
+  61   2      
+  62   2          duty+=(int)(2.29*increment);
+  63   2          if(duty>=PWM_FREQ_MAX){
+  64   3            duty=PWM_FREQ_MAX;
+  65   3          }
+  66   2          if(duty<=0){
+  67   3            duty=0;
+  68   3          }
+  69   2          
+  70   2          pwm_duty(PWM4P_P66,duty);
+  71   2          dataFrame[0]=measuredValue;
+  72   2          printf("duty=%d,output=%d",duty,output);
+  73   2          vcan_sendware(dataFrame,sizeof(dataFrame));
+  74   2          delay_ms(100);
+  75   2        }
+  76   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    928    ----
-   CONSTANT SIZE    =      4    ----
+   CODE SIZE        =    972    ----
+   CONSTANT SIZE    =     22    ----
    XDATA SIZE       =     34      15
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
