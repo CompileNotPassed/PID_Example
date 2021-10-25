@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.0.0   ISR                                                               10/23/2021 19:39:41 PAGE 1   
+C51 COMPILER V9.60.0.0   ISR                                                               10/24/2021 16:07:51 PAGE 1   
 
 
 C51 COMPILER V9.60.0.0, COMPILATION OF MODULE ISR
@@ -62,7 +62,7 @@ line level    source
   49          void UART2_Isr() interrupt 8
   50          {
   51   1          if(UART2_GET_TX_FLAG)
-C51 COMPILER V9.60.0.0   ISR                                                               10/23/2021 19:39:41 PAGE 2   
+C51 COMPILER V9.60.0.0   ISR                                                               10/24/2021 16:07:51 PAGE 2   
 
   52   1        {
   53   2              UART2_CLEAR_TX_FLAG;
@@ -126,7 +126,7 @@ line level    source
  111   1      }
  112          void INT3_Isr() interrupt 11
  113          {
-C51 COMPILER V9.60.0.0   ISR                                                               10/23/2021 19:39:41 PAGE 3   
+C51 COMPILER V9.60.0.0   ISR                                                               10/24/2021 16:07:51 PAGE 3   
 
  114   1        INT3_CLEAR_FLAG;  //清除中断标志
  115   1      }
@@ -155,48 +155,43 @@ line level    source
  138   1        
  139   1      }
  140          
- 141          void TM4_Isr() interrupt 20
- 142          {
- 143   1        TIM4_CLEAR_FLAG; //清除中断标志
- 144   1        ccd_collect();   //CCD采集数据
- 145   1      
- 146   1      }
- 147          
- 148          //void  INT0_Isr()  interrupt 0;
- 149          //void  TM0_Isr()   interrupt 1;
- 150          //void  INT1_Isr()  interrupt 2;
- 151          //void  TM1_Isr()   interrupt 3;
- 152          //void  UART1_Isr() interrupt 4;
- 153          //void  ADC_Isr()   interrupt 5;
- 154          //void  LVD_Isr()   interrupt 6;
- 155          //void  PCA_Isr()   interrupt 7;
- 156          //void  UART2_Isr() interrupt 8;
- 157          //void  SPI_Isr()   interrupt 9;
- 158          //void  INT2_Isr()  interrupt 10;
- 159          //void  INT3_Isr()  interrupt 11;
- 160          //void  TM2_Isr()   interrupt 12;
- 161          //void  INT4_Isr()  interrupt 16;
- 162          //void  UART3_Isr() interrupt 17;
- 163          //void  UART4_Isr() interrupt 18;
- 164          //void  TM3_Isr()   interrupt 19;
- 165          //void  TM4_Isr()   interrupt 20;
- 166          //void  CMP_Isr()   interrupt 21;
- 167          //void  I2C_Isr()   interrupt 24;
- 168          //void  USB_Isr()   interrupt 25;
- 169          //void  PWM1_Isr()  interrupt 26;
- 170          //void  PWM2_Isr()  interrupt 27;
+ 141          
+ 142          
+ 143          //void  INT0_Isr()  interrupt 0;
+ 144          //void  TM0_Isr()   interrupt 1;
+ 145          //void  INT1_Isr()  interrupt 2;
+ 146          //void  TM1_Isr()   interrupt 3;
+ 147          //void  UART1_Isr() interrupt 4;
+ 148          //void  ADC_Isr()   interrupt 5;
+ 149          //void  LVD_Isr()   interrupt 6;
+ 150          //void  PCA_Isr()   interrupt 7;
+ 151          //void  UART2_Isr() interrupt 8;
+ 152          //void  SPI_Isr()   interrupt 9;
+ 153          //void  INT2_Isr()  interrupt 10;
+ 154          //void  INT3_Isr()  interrupt 11;
+ 155          //void  TM2_Isr()   interrupt 12;
+ 156          //void  INT4_Isr()  interrupt 16;
+ 157          //void  UART3_Isr() interrupt 17;
+ 158          //void  UART4_Isr() interrupt 18;
+ 159          //void  TM3_Isr()   interrupt 19;
+ 160          //void  TM4_Isr()   interrupt 20;
+ 161          //void  CMP_Isr()   interrupt 21;
+ 162          //void  I2C_Isr()   interrupt 24;
+ 163          //void  USB_Isr()   interrupt 25;
+ 164          //void  PWM1_Isr()  interrupt 26;
+ 165          //void  PWM2_Isr()  interrupt 27;
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    357    ----
+   CODE SIZE        =    292    ----
    CONSTANT SIZE    =   ----    ----
-C51 COMPILER V9.60.0.0   ISR                                                               10/23/2021 19:39:41 PAGE 4   
-
    XDATA SIZE       =      1    ----
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----    ----
+C51 COMPILER V9.60.0.0   ISR                                                               10/24/2021 16:07:51 PAGE 4   
+
    EDATA SIZE       =   ----    ----
    HDATA SIZE       =   ----    ----
    XDATA CONST SIZE =   ----    ----

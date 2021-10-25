@@ -45,17 +45,18 @@ void main()
 	PID_Init();
 	while (1)
 	{
-		P45 = 0;
+		P45 = 0;	//Switch off buzzer
 		
 		measuredValue=decoderRead();
-
+		sendware();
+		
 		PID_Controller();
 
 		duty+=(int)(2.29*increment);
 
 		pwm_set(duty);
 
-		sendware();
+		
 		delay_ms(100);
 	}
 }

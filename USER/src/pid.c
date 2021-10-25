@@ -27,7 +27,7 @@ void PID_Init()
 	//Only for Test use
 	timeElapsed = 1;
 	measuredValue = 0;
-	target = 600;
+	target = 500;
 	kp = 0.05;
 	ki = 0.0;
 	kd = 0.0;
