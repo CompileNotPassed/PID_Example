@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.0.0   MAIN                                                              10/24/2021 16:11:55 PAGE 1   
+C51 COMPILER V9.60.0.0   MAIN                                                              10/24/2021 15:15:10 PAGE 1   
 
 
 C51 COMPILER V9.60.0.0, COMPILATION OF MODULE MAIN
@@ -33,54 +33,68 @@ line level    source
   20          #include "headfile.h"
   21          #include "pid.c"
   22          #include "sendware.c"
-  23          #include "decoder.c"
-  24          #include "pwm.c"
-  25          
-  26          //board.h文件中FOSC的值设置为0,则程序自动识别系统频率
-  27          
-  28          /*board.h文件中FOSC的值设置不为0，则系统频率为FOSC的值，
-  29          在使用stc-isp工具下载程序的时候需要将IRC频率设置为FOSC的值*/
-  30          
-  31          /*在board_init中,已经将P54引脚设置为复位，
-  32          如果需要使用P54引脚,可以在board.c文件中的board_init()函数中删除SET_P54_RESRT即可*/
-  33          
+  23          #define DIR P35
+  24          #define PWM_FREQ_MAX 2500
+  25          //board.h文件中FOSC的值设置为0,则程序自动识别系统频率
+  26          
+  27          /*board.h文件中FOSC的值设置不为0，则系统频率为FOSC的值，
+  28          在使用stc-isp工具下载程序的时候需要将IRC频率设置为FOSC的值*/
+  29          
+  30          /*在board_init中,已经将P54引脚设置为复位，
+  31          如果需要使用P54引脚,可以在board.c文件中的board_init()函数中删除SET_P54_RESRT即可*/
+  32          
+  33          int16 duty,dataFrame[1];
   34          
-  35          void main()
-  36          {
-  37   1        DisableGlobalIRQ(); //关闭总中断
-  38   1        board_init();   //初始化内部寄存器，勿删除此句代码。
-  39   1      
-  40   1        //此处编写用户代码(例如：外设初始化代码等)
-  41   1        pwm_init(PWM4P_P66, 10000, 0);  //Init PWM
-  42   1        ctimer_count_init(CTIM0_P34); //Init Decoder Counter
-  43   1      
-  44   1        EnableGlobalIRQ(); //开启总中断
-  45   1        PID_Init();
-  46   1        while (1)
-  47   1        {
-  48   2          P45 = 0;  //Switch buzzer off
-  49   2          
-  50   2          measuredValue=decoderRead();
-  51   2      
-C51 COMPILER V9.60.0.0   MAIN                                                              10/24/2021 16:11:55 PAGE 2   
+  35          
+  36          void main()
+  37          {
+  38   1        DisableGlobalIRQ(); //关闭总中断
+  39   1        board_init();   //初始化内部寄存器，勿删除此句代码。
+  40   1      
+  41   1        //此处编写用户代码(例如：外设初始化代码等)
+  42   1        pwm_init(PWM4P_P66, 10000, 0);
+  43   1        ctimer_count_init(CTIM0_P34);
+  44   1      
+  45   1        EnableGlobalIRQ(); //开启总中断
+  46   1        PID_Init();
+  47   1        while (1)
+  48   1        {
+  49   2          P45 = 0;
+  50   2          if(DIR == 1)
+  51   2          {
+C51 COMPILER V9.60.0.0   MAIN                                                              10/24/2021 15:15:10 PAGE 2   
 
-  52   2          
-  53   2          PID_Controller();
-  54   2      
-  55   2          duty+=(int)(2.29*increment);
-  56   2      
-  57   2          pwm_set(duty);
-  58   2          sendware();
-  59   2          
-  60   2          delay_ms(100);
-  61   2        }
-  62   1      }
+  52   3            measuredValue = -ctimer_count_read(CTIM0_P34);
+  53   3          }
+  54   2          else
+  55   2          {
+  56   3            measuredValue = ctimer_count_read(CTIM0_P34);
+  57   3          }
+  58   2      
+  59   2          ctimer_count_clean(CTIM0_P34);
+  60   2          PID_Controller();
+  61   2      
+  62   2          duty+=(int)(2.29*increment);
+  63   2          if(duty>=PWM_FREQ_MAX){
+  64   3            duty=PWM_FREQ_MAX;
+  65   3          }
+  66   2          if(duty<=0){
+  67   3            duty=0;
+  68   3          }
+  69   2          
+  70   2          pwm_duty(PWM4P_P66,duty);
+  71   2          dataFrame[0]=measuredValue;
+  72   2          printf("duty=%d,output=%d",duty,output);
+  73   2          vcan_sendware(dataFrame,sizeof(dataFrame));
+  74   2          delay_ms(100);
+  75   2        }
+  76   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    941    ----
-   CONSTANT SIZE    =      4    ----
-   XDATA SIZE       =     34      17
+   CODE SIZE        =    972    ----
+   CONSTANT SIZE    =     22    ----
+   XDATA SIZE       =     34      15
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----

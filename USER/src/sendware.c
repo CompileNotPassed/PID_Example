@@ -1,6 +1,4 @@
 #include "headfile.h"
-int16 dataFrame[1];
-
 
 void vcan_sendware(void *wareaddr, uint32 waresize)
 {
@@ -20,9 +18,4 @@ void vcan_sendware(void *wareaddr, uint32 waresize)
     uart_putbuff(VCAN_PORT, cmdf, sizeof(cmdf));
     uart_putbuff(VCAN_PORT, (uint8 *) wareaddr, waresize);
     uart_putbuff(VCAN_PORT, cmdr, sizeof(cmdr));
-}
-
-void sendware(){
-    dataFrame[0]=measuredValue;
-	vcan_sendware(dataFrame,sizeof(dataFrame));
 }
